@@ -15,77 +15,111 @@ import time
 # Page configuration
 st.set_page_config(
     page_title="Hospital Management System",
-    page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for elegant UI
+# Custom CSS for professional red & white theme
 st.markdown("""
     <style>
+    :root {
+        --primary-red: #b30000;
+        --primary-red-dark: #7d0000;
+        --light-bg: #ffffff;
+        --border-grey: #e0e0e0;
+    }
     .main {
-        background-color: #f5f7fa;
+        background-color: var(--light-bg);
     }
     .stButton>button {
         width: 100%;
-        border-radius: 8px;
-        height: 3em;
+        border-radius: 6px;
+        height: 2.75em;
         font-weight: 600;
+        background: var(--primary-red);
+        border: 1px solid var(--primary-red-dark);
+        color: #ffffff;
     }
-    .success-box {
-        padding: 1rem;
-        border-radius: 8px;
-        background-color: #d4edda;
-        border-left: 4px solid #28a745;
-        margin: 1rem 0;
+    .stButton>button:hover {
+        background: var(--primary-red-dark);
+        border-color: var(--primary-red-dark);
+        color: #ffffff;
     }
-    .warning-box {
-        padding: 1rem;
-        border-radius: 8px;
-        background-color: #fff3cd;
-        border-left: 4px solid #ffc107;
-        margin: 1rem 0;
+    .success-box, .warning-box, .info-box {
+        padding: 0.9rem 1.1rem;
+        border-radius: 6px;
+        background-color: #ffffff;
+        border: 1px solid var(--border-grey);
+        margin: 0.75rem 0;
     }
-    .info-box {
-        padding: 1rem;
-        border-radius: 8px;
-        background-color: #d1ecf1;
-        border-left: 4px solid #17a2b8;
-        margin: 1rem 0;
-    }
+    .success-box { border-left: 4px solid #157347; }
+    .warning-box { border-left: 4px solid #c99700; }
+    .info-box { border-left: 4px solid var(--primary-red); }
     .metric-card {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background-color: #ffffff;
+        padding: 1.25rem 1.1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-grey);
         text-align: center;
+        position: relative;
+    }
+    .metric-card h3 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--primary-red);
+        letter-spacing: 0.5px;
+        margin-bottom: 0.35rem;
+    }
+    .metric-card p {
+        margin: 0;
+        font-size: 2.2rem !important;
+        font-weight: 600;
+        color: #222;
     }
     .header-title {
-        color: #2c3e50;
-        font-size: 2.5rem;
+        color: var(--primary-red);
+        font-size: 2.2rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
+        letter-spacing: .5px;
     }
     .header-subtitle {
-        color: #7f8c8d;
-        font-size: 1.1rem;
-        margin-bottom: 2rem;
+        color: #555;
+        font-size: 1rem;
+        margin-bottom: 1.6rem;
     }
     div[data-testid="stMetricValue"] {
-        font-size: 2rem;
-        font-weight: 700;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--primary-red);
     }
     .footer {
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: #2c3e50;
-        color: white;
+        background-color: var(--primary-red);
+        color: #ffffff;
         text-align: center;
-        padding: 0.5rem;
-        font-size: 0.9rem;
+        padding: 0.45rem 0.5rem;
+        font-size: 0.8rem;
         z-index: 999;
+        letter-spacing: .3px;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.5rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background: #ffffff;
+        padding: 0.6rem 1rem;
+        border-radius: 4px;
+        border: 1px solid var(--border-grey);
+    }
+    .stTabs [aria-selected="true"] {
+        background: var(--primary-red);
+        color: #ffffff;
+        border-color: var(--primary-red-dark);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -109,20 +143,20 @@ def show_consent_banner():
         with st.container():
             st.markdown("""
                 <div class="info-box">
-                    <h4>🔒 GDPR Data Privacy Notice</h4>
+                    <h4>GDPR Data Privacy Notice</h4>
                     <p>This system processes personal health data in compliance with GDPR. We collect and process data solely for healthcare purposes. 
-                    You have the right to access, rectify, or delete your data. Data retention period: 30 days unless required longer for medical records.</p>
+                    You have the right to access, rectify, or delete your data. Standard data retention period: 30 days unless clinically required longer.</p>
                 </div>
             """, unsafe_allow_html=True)
             
             col1, col2, col3 = st.columns([2, 1, 1])
             with col2:
-                if st.button("✅ I Understand", key="consent_accept"):
+                if st.button("I Understand", key="consent_accept"):
                     st.session_state.consent_shown = True
                     st.rerun()
             with col3:
-                if st.button("📋 Privacy Policy", key="consent_policy"):
-                    st.info("**Privacy Policy**: Your data is encrypted, anonymized, and protected according to GDPR standards. All access is logged for audit purposes.")
+                if st.button("Privacy Policy", key="consent_policy"):
+                    st.info("Privacy Policy: Your data is encrypted, anonymized, and protected according to GDPR standards. All access is logged for audit purposes.")
 
 def login_page():
     """Login Page with Authentication"""
@@ -131,23 +165,23 @@ def login_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        st.markdown("<h1 class='header-title' style='text-align: center;'>🏥 Hospital Management</h1>", unsafe_allow_html=True)
-        st.markdown("<p class='header-subtitle' style='text-align: center;'>GDPR-Compliant Patient Data System</p>", unsafe_allow_html=True)
+        st.markdown("<h1 class='header-title' style='text-align: center;'>Hospital Management System</h1>", unsafe_allow_html=True)
+        st.markdown("<p class='header-subtitle' style='text-align: center;'>Secure GDPR-Compliant Patient Data Portal</p>", unsafe_allow_html=True)
         
         with st.container():
             st.markdown("""
                 <div style='background-color: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
-                    <h3 style='text-align: center; color: #2c3e50; margin-bottom: 1.5rem;'>🔐 Secure Login</h3>
+                    <h3 style='text-align: center; color: #b30000; margin-bottom: 1.5rem;'>Secure Login</h3>
                 </div>
             """, unsafe_allow_html=True)
             
             with st.form("login_form", clear_on_submit=True):
-                username = st.text_input("👤 Username", placeholder="Enter your username")
-                password = st.text_input("🔑 Password", type="password", placeholder="Enter your password")
+                username = st.text_input("Username", placeholder="Enter your username")
+                password = st.text_input("Password", type="password", placeholder="Enter your password")
                 
                 col_a, col_b, col_c = st.columns([1, 2, 1])
                 with col_b:
-                    submit = st.form_submit_button("🚀 Login", use_container_width=True)
+                    submit = st.form_submit_button("Login", use_container_width=True)
                 
                 if submit:
                     if username and password:
@@ -156,18 +190,18 @@ def login_page():
                             if user:
                                 st.session_state.logged_in = True
                                 st.session_state.user = user
-                                st.success(f"✅ Welcome, {user['username']}! Role: {user['role'].upper()}")
+                                st.success(f"Welcome, {user['username']}. Role: {user['role'].upper()}")
                                 time.sleep(1)
                                 st.rerun()
                             else:
-                                st.error("❌ Invalid credentials. Please try again.")
+                                st.error("Invalid credentials. Please try again.")
                         except Exception as e:
-                            st.error(f"🚨 Login error: {str(e)}")
+                            st.error(f"Login error: {str(e)}")
                     else:
-                        st.warning("⚠️ Please enter both username and password.")
+                        st.warning("Please enter both username and password.")
         
         # Default credentials info
-        with st.expander("ℹ️ Default Login Credentials"):
+        with st.expander("Default Login Credentials"):
             st.markdown("""
             **Admin:**
             - Username: `admin`
@@ -185,14 +219,10 @@ def login_page():
 def admin_dashboard():
     """Admin Dashboard - Full Access"""
     user = st.session_state.user
-    
-    st.markdown(f"<h1 class='header-title'>👨‍💼 Admin Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1 class='header-title'>Admin Dashboard</h1>", unsafe_allow_html=True)
     st.markdown(f"<p class='header-subtitle'>Welcome, {user['username']} | Full System Access</p>", unsafe_allow_html=True)
-    
-    # Tabs for different sections
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "📊 Overview", "👥 Patient Management", "🔒 Data Security", 
-        "📋 Audit Logs", "📈 Analytics", "⚙️ GDPR Compliance"
+        "Overview", "Patient Management", "Data Security", "Audit Logs", "Analytics", "GDPR Compliance"
     ])
     
     with tab1:
@@ -216,11 +246,9 @@ def admin_dashboard():
 def doctor_dashboard():
     """Doctor Dashboard - Anonymized Data Access"""
     user = st.session_state.user
-    
-    st.markdown(f"<h1 class='header-title'>👨‍⚕️ Doctor Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1 class='header-title'>Doctor Dashboard</h1>", unsafe_allow_html=True)
     st.markdown(f"<p class='header-subtitle'>Welcome, Dr. {user['username']} | Anonymized Patient Data View</p>", unsafe_allow_html=True)
-    
-    tab1, tab2 = st.tabs(["📊 Overview", "👥 View Patients"])
+    tab1, tab2 = st.tabs(["Overview", "Patients"])
     
     with tab1:
         show_overview_dashboard()
@@ -231,11 +259,9 @@ def doctor_dashboard():
 def receptionist_dashboard():
     """Receptionist Dashboard - Add/Edit Records"""
     user = st.session_state.user
-    
-    st.markdown(f"<h1 class='header-title'>👩‍💼 Receptionist Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1 class='header-title'>Receptionist Dashboard</h1>", unsafe_allow_html=True)
     st.markdown(f"<p class='header-subtitle'>Welcome, {user['username']} | Patient Records Management</p>", unsafe_allow_html=True)
-    
-    tab1, tab2, tab3 = st.tabs(["📊 Overview", "➕ Add Patient", "✏️ Edit Patient"])
+    tab1, tab2, tab3 = st.tabs(["Overview", "Add Patient", "Edit Patient"])
     
     with tab1:
         show_overview_dashboard()
@@ -257,8 +283,8 @@ def show_overview_dashboard():
         with col1:
             st.markdown("""
                 <div class='metric-card'>
-                    <h3 style='color: #3498db;'>👥 Total Patients</h3>
-                    <p style='font-size: 2.5rem; font-weight: 700; color: #2c3e50;'>{}</p>
+                    <h3>Total Patients</h3>
+                    <p>{}</p>
                 </div>
             """.format(len(patients)), unsafe_allow_html=True)
         
@@ -266,44 +292,45 @@ def show_overview_dashboard():
             anonymized = sum(1 for p in patients if p[5] == 1)
             st.markdown("""
                 <div class='metric-card'>
-                    <h3 style='color: #e74c3c;'>🔒 Anonymized</h3>
-                    <p style='font-size: 2.5rem; font-weight: 700; color: #2c3e50;'>{}</p>
+                    <h3>Anonymized</h3>
+                    <p>{}</p>
                 </div>
             """.format(anonymized), unsafe_allow_html=True)
         
         with col3:
             st.markdown("""
                 <div class='metric-card'>
-                    <h3 style='color: #2ecc71;'>✅ With Consent</h3>
-                    <p style='font-size: 2.5rem; font-weight: 700; color: #2c3e50;'>{}</p>
+                    <h3>With Consent</h3>
+                    <p>{}</p>
                 </div>
             """.format(sum(1 for p in patients if p[6] == 1)), unsafe_allow_html=True)
         
         with col4:
             st.markdown("""
                 <div class='metric-card'>
-                    <h3 style='color: #f39c12;'>📋 Total Logs</h3>
-                    <p style='font-size: 2.5rem; font-weight: 700; color: #2c3e50;'>{}</p>
+                    <h3>Total Logs</h3>
+                    <p>{}</p>
                 </div>
             """.format(len(logs)), unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Recent activity
-        st.subheader("📊 Recent System Activity")
-        if logs:
-            recent_logs = logs[:10]
-            df_logs = pd.DataFrame(recent_logs, columns=['Log ID', 'Username', 'Role', 'Action', 'Timestamp', 'Details'])
-            st.dataframe(df_logs, use_container_width=True, hide_index=True)
-        else:
-            st.info("No recent activity recorded.")
+        # Recent activity (admin only)
+        if st.session_state.user.get('role') == 'admin':
+            st.subheader("Recent System Activity")
+            if logs:
+                recent_logs = logs[:10]
+                df_logs = pd.DataFrame(recent_logs, columns=['Log ID', 'Username', 'Role', 'Action', 'Timestamp', 'Details'])
+                st.dataframe(df_logs, use_container_width=True, hide_index=True)
+            else:
+                st.info("No recent activity recorded.")
             
     except Exception as e:
-        st.error(f"🚨 Error loading overview: {str(e)}")
+        st.error(f"Error loading overview: {str(e)}")
 
 def show_patient_management(user, is_admin=False):
     """Patient management for admin"""
-    st.subheader("👥 Patient Data Management")
+    st.subheader("Patient Data Management")
     
     col1, col2 = st.columns([2, 1])
     
@@ -315,7 +342,7 @@ def show_patient_management(user, is_admin=False):
         )
     
     with col2:
-        if st.button("🔄 Refresh Data", use_container_width=True):
+        if st.button("Refresh Data", use_container_width=True):
             st.rerun()
     
     show_anonymized = view_mode == "Anonymized View"
@@ -328,7 +355,7 @@ def show_patient_management(user, is_admin=False):
         # Export option
         csv_data = db.export_patients_csv(user['role'])
         st.download_button(
-            label="📥 Download Patient Data (CSV)",
+            label="Download Patient Data (CSV)",
             data=csv_data,
             file_name=f"patients_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
             mime="text/csv"
@@ -337,13 +364,13 @@ def show_patient_management(user, is_admin=False):
         # Delete patient (Admin only)
         if is_admin:
             st.markdown("---")
-            st.subheader("🗑️ Delete Patient Record")
+            st.subheader("Delete Patient Record")
             col_a, col_b = st.columns([3, 1])
             with col_a:
                 patient_id_to_delete = st.number_input("Enter Patient ID to Delete", min_value=1, step=1, key="delete_id")
             with col_b:
                 st.markdown("<br>", unsafe_allow_html=True)
-                if st.button("🗑️ Delete", type="primary", use_container_width=True):
+                if st.button("Delete", type="primary", use_container_width=True):
                     success, message = db.delete_patient(patient_id_to_delete, user['user_id'], user['username'], user['role'])
                     if success:
                         st.success(message)
@@ -356,7 +383,7 @@ def show_patient_management(user, is_admin=False):
 
 def show_patient_list(user, can_edit=False):
     """Display patient list for doctors"""
-    st.subheader("👥 Patient Records (Anonymized)")
+    st.subheader("Patient Records (Anonymized)")
     
     patients = db.get_patients(user['role'])
     
@@ -366,31 +393,31 @@ def show_patient_list(user, can_edit=False):
         # Apply styling
         st.dataframe(df, use_container_width=True, hide_index=True)
         
-        st.info("ℹ️ Patient data is displayed in anonymized format to protect privacy.")
+        st.info("Patient data is displayed in anonymized format to protect privacy.")
         
         # Log view action
         db.log_action(user['user_id'], user['username'], user['role'], 
                      'view_patients', f'Viewed {len(patients)} patient records')
     else:
-        st.warning("⚠️ No patient records available.")
+        st.warning("No patient records available.")
 
 def add_patient_form(user):
     """Form to add new patient"""
-    st.subheader("➕ Add New Patient Record")
+    st.subheader("Add New Patient Record")
     
     with st.form("add_patient_form", clear_on_submit=True):
         col1, col2 = st.columns(2)
         
         with col1:
-            name = st.text_input("👤 Patient Name*", placeholder="Enter full name")
-            contact = st.text_input("📞 Contact Number*", placeholder="555-123-4567")
+            name = st.text_input("Patient Name*", placeholder="Enter full name")
+            contact = st.text_input("Contact Number*", placeholder="555-123-4567")
         
         with col2:
-            diagnosis = st.text_input("🏥 Diagnosis*", placeholder="Enter diagnosis")
-            consent = st.checkbox("✅ Patient Consent Given", value=True)
+            diagnosis = st.text_input("Diagnosis*", placeholder="Enter diagnosis")
+            consent = st.checkbox("Patient Consent Given", value=True)
         
         st.markdown("---")
-        submit = st.form_submit_button("💾 Add Patient Record", use_container_width=True, type="primary")
+        submit = st.form_submit_button("Add Patient Record", use_container_width=True, type="primary")
         
         if submit:
             if name and contact and diagnosis:
@@ -398,17 +425,17 @@ def add_patient_form(user):
                                                  user['user_id'], user['username'], 
                                                  user['role'], consent)
                 if success:
-                    st.success(f"✅ {message}")
+                    st.success(message)
                     time.sleep(1)
                     st.rerun()
                 else:
-                    st.error(f"❌ {message}")
+                    st.error(message)
             else:
-                st.warning("⚠️ Please fill in all required fields.")
+                st.warning("Please fill in all required fields.")
 
 def edit_patient_form(user):
     """Form to edit existing patient"""
-    st.subheader("✏️ Edit Patient Record")
+    st.subheader("Edit Patient Record")
     
     patients = db.get_patients('admin', show_anonymized=False)
     
@@ -425,65 +452,63 @@ def edit_patient_form(user):
             col1, col2 = st.columns(2)
             
             with col1:
-                name = st.text_input("👤 Patient Name", value=current_patient[1])
-                contact = st.text_input("📞 Contact Number", value=current_patient[2])
+                name = st.text_input("Patient Name", value=current_patient[1])
+                contact = st.text_input("Contact Number", value=current_patient[2])
             
             with col2:
-                diagnosis = st.text_input("🏥 Diagnosis", value=current_patient[3])
+                diagnosis = st.text_input("Diagnosis", value=current_patient[3])
             
             st.markdown("---")
-            submit = st.form_submit_button("💾 Update Patient Record", use_container_width=True, type="primary")
+            submit = st.form_submit_button("Update Patient Record", use_container_width=True, type="primary")
             
             if submit:
                 if name and contact and diagnosis:
                     success, message = db.update_patient(patient_id, name, contact, diagnosis,
                                                         user['user_id'], user['username'], user['role'])
                     if success:
-                        st.success(f"✅ {message}")
+                        st.success(message)
                         time.sleep(1)
                         st.rerun()
                     else:
-                        st.error(f"❌ {message}")
+                        st.error(message)
                 else:
-                    st.warning("⚠️ All fields are required.")
+                    st.warning("All fields are required.")
     else:
         st.info("No patient records available for editing.")
 
 def show_data_security(user):
     """Data security controls for admin"""
-    st.subheader("🔒 Data Security & Anonymization")
+    st.subheader("Data Security & Anonymization")
     
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
             <div class='info-box'>
-                <h4>🔐 Fernet Encryption (Reversible)</h4>
-                <p>Patient data is encrypted using Fernet symmetric encryption. 
-                This allows for reversible anonymization while maintaining data security.</p>
+                <h4>Fernet Encryption (Reversible)</h4>
+                <p>Patient data is encrypted using Fernet symmetric encryption. This enables reversible anonymization while maintaining data security.</p>
             </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🔒 Anonymize All Patient Data", use_container_width=True, type="primary"):
+        if st.button("Anonymize All Patient Data", use_container_width=True, type="primary"):
             with st.spinner("Encrypting patient data..."):
                 count = db.anonymize_patient_data(user['user_id'], user['username'], user['role'])
-                st.success(f"✅ Successfully anonymized {count} patient records with Fernet encryption!")
+                st.success(f"Successfully anonymized {count} patient records with Fernet encryption.")
                 time.sleep(1)
                 st.rerun()
     
     with col2:
         st.markdown("""
             <div class='warning-box'>
-                <h4>🔓 De-Anonymization (Admin Only)</h4>
-                <p>Decrypt and restore original patient data. This action requires admin privileges 
-                and will be logged in the audit trail.</p>
+                <h4>De-Anonymization (Admin Only)</h4>
+                <p>Decrypt and restore original patient data. This action requires admin privileges and will be logged.</p>
             </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🔓 De-Anonymize Patient Data", use_container_width=True):
+        if st.button("De-Anonymize Patient Data", use_container_width=True):
             with st.spinner("Decrypting patient data..."):
                 count = db.de_anonymize_patient_data(user['user_id'], user['username'], user['role'])
-                st.success(f"✅ Successfully de-anonymized {count} patient records!")
+                st.success(f"Successfully de-anonymized {count} patient records.")
                 time.sleep(1)
                 st.rerun()
     
@@ -494,7 +519,7 @@ def show_data_security(user):
     anonymized_count = sum(1 for p in patients if p[5] == 1)
     total_count = len(patients)
     
-    st.subheader("📊 Encryption Status")
+    st.subheader("Encryption Status")
     
     if total_count > 0:
         progress = anonymized_count / total_count
@@ -506,11 +531,15 @@ def show_data_security(user):
 
 def show_audit_logs(user):
     """Display audit logs for integrity monitoring"""
-    st.subheader("📋 Integrity Audit Logs")
+    # Role guard: only admins may view audit logs even if function is called elsewhere
+    if not user or user.get('role') != 'admin':
+        st.error("Unauthorized access: audit logs are restricted to administrators.")
+        return
+    st.subheader("Integrity Audit Logs")
     
     st.markdown("""
         <div class='info-box'>
-            <h4>🔍 Audit Trail System</h4>
+            <h4>Audit Trail System</h4>
             <p>All user actions are logged with timestamps for complete accountability and GDPR compliance.</p>
         </div>
     """, unsafe_allow_html=True)
@@ -546,7 +575,7 @@ def show_audit_logs(user):
         # Export logs
         csv_data = db.export_logs_csv()
         st.download_button(
-            label="📥 Download Audit Logs (CSV)",
+            label="Download Audit Logs (CSV)",
             data=csv_data,
             file_name=f"audit_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
             mime="text/csv"
@@ -554,7 +583,7 @@ def show_audit_logs(user):
         
         # Log statistics
         st.markdown("---")
-        st.subheader("📊 Log Statistics")
+        st.subheader("Log Statistics")
         
         col_a, col_b, col_c = st.columns(3)
         
@@ -574,14 +603,14 @@ def show_audit_logs(user):
 
 def show_analytics():
     """Show analytics and activity graphs (Bonus Feature)"""
-    st.subheader("📈 Real-Time Activity Analytics")
+    st.subheader("Real-Time Activity Analytics")
     
     # Time range selector
     col1, col2 = st.columns([3, 1])
     with col1:
         days = st.slider("Select Time Range (days)", 1, 30, 7)
     with col2:
-        if st.button("🔄 Refresh", use_container_width=True):
+        if st.button("Refresh", use_container_width=True):
             st.rerun()
     
     # Get data
@@ -620,7 +649,7 @@ def show_analytics():
         
         # Action breakdown table
         st.markdown("---")
-        st.subheader("📊 Action Breakdown")
+        st.subheader("Action Breakdown")
         if action_counts:
             df_actions = pd.DataFrame(action_counts, columns=['Action Type', 'Count'])
             
@@ -630,7 +659,7 @@ def show_analytics():
             
             with col2:
                 # Top actions
-                st.markdown("**Top 3 Actions:**")
+                st.markdown("Top 3 Actions:")
                 for i, (action, count) in enumerate(action_counts[:3], 1):
                     st.markdown(f"{i}. **{action}**: {count} times")
     else:
@@ -638,10 +667,10 @@ def show_analytics():
 
 def show_gdpr_compliance(user):
     """GDPR compliance features (Bonus)"""
-    st.subheader("⚙️ GDPR Compliance Tools")
+    st.subheader("GDPR Compliance Tools")
     
     # Data Retention Management
-    st.markdown("### 📅 Data Retention Management")
+    st.markdown("### Data Retention Management")
     st.markdown("""
         <div class='info-box'>
             <p>Patient records are automatically retained for 30 days from creation. 
@@ -652,16 +681,16 @@ def show_gdpr_compliance(user):
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("🗑️ Run Data Retention Cleanup", use_container_width=True, type="primary"):
+        if st.button("Run Data Retention Cleanup", use_container_width=True, type="primary"):
             with st.spinner("Checking for expired records..."):
                 expired_count = db.check_data_retention()
                 if expired_count > 0:
-                    st.success(f"✅ Removed {expired_count} expired patient record(s)")
+                    st.success(f"Removed {expired_count} expired patient record(s)")
                     db.log_action(user['user_id'], user['username'], user['role'], 
                                  'manual_retention_cleanup', 
                                  f'Manually triggered retention cleanup, removed {expired_count} records')
                 else:
-                    st.info("✅ No expired records found.")
+                    st.info("No expired records found.")
     
     with col2:
         # Show retention statistics
@@ -672,7 +701,7 @@ def show_gdpr_compliance(user):
     st.markdown("---")
     
     # Consent Management
-    st.markdown("### ✅ Consent Management")
+    st.markdown("### Consent Management")
     patients = db.get_patients(user['role'])
     
     if patients:
@@ -702,28 +731,28 @@ def show_gdpr_compliance(user):
     st.markdown("---")
     
     # GDPR Rights Summary
-    st.markdown("### 📋 GDPR Rights Implementation")
+    st.markdown("### GDPR Rights Implementation")
     
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
             **Implemented Rights:**
-            - ✅ Right to Access (Role-based views)
-            - ✅ Right to Rectification (Edit patient records)
-            - ✅ Right to Erasure (Delete records)
-            - ✅ Right to Data Portability (CSV export)
-            - ✅ Right to be Informed (Consent banner)
+            - Right to Access (role-based views)
+            - Right to Rectification (edit patient records)
+            - Right to Erasure (delete records)
+            - Right to Data Portability (CSV export)
+            - Right to be Informed (consent banner)
         """)
     
     with col2:
         st.markdown("""
             **Security Measures:**
-            - 🔒 Fernet Encryption (Reversible)
-            - 🎭 Data Anonymization/Masking
-            - 📋 Complete Audit Trail
-            - 🔑 Role-Based Access Control
-            - ⏰ Automated Data Retention
+            - Fernet Encryption (reversible)
+            - Data Anonymization / Masking
+            - Complete Audit Trail
+            - Role-Based Access Control
+            - Automated Data Retention
         """)
 
 def show_footer():
@@ -731,10 +760,7 @@ def show_footer():
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     st.markdown(f"""
         <div class='footer'>
-            🏥 Hospital Management System v1.0 | 
-            GDPR Compliant | CIA Triad Implementation | 
-            System Time: {current_time} | 
-            ⚡ System Online
+            Hospital Management System v1.0 | GDPR Compliant | CIA Triad Implementation | System Time: {current_time} | System Online
         </div>
     """, unsafe_allow_html=True)
 
@@ -752,24 +778,24 @@ def main():
     else:
         # Sidebar
         with st.sidebar:
-            st.markdown(f"### 👤 Logged in as:")
+            st.markdown(f"### Logged in as:")
             st.markdown(f"**{st.session_state.user['username']}**")
             st.markdown(f"Role: **{st.session_state.user['role'].upper()}**")
             st.markdown("---")
             
             # Navigation (informational)
-            st.markdown("### 🧭 Navigation")
+            st.markdown("### Navigation")
             if st.session_state.user['role'] == 'admin':
-                st.info("Admin access: Full system control")
+                st.info("Admin access: full system control")
             elif st.session_state.user['role'] == 'doctor':
-                st.info("Doctor access: View anonymized data")
+                st.info("Doctor access: anonymized data view")
             else:
-                st.info("Receptionist: Add/Edit records")
+                st.info("Receptionist: add / edit records")
             
             st.markdown("---")
             
             # Logout button
-            if st.button("🚪 Logout", use_container_width=True, type="primary"):
+            if st.button("Logout", use_container_width=True, type="primary"):
                 db.log_action(st.session_state.user['user_id'], 
                             st.session_state.user['username'], 
                             st.session_state.user['role'], 
@@ -781,11 +807,11 @@ def main():
                 st.rerun()
             
             st.markdown("---")
-            st.markdown("### 🛡️ CIA Triad")
+            st.markdown("### CIA Triad")
             st.markdown("""
-                - **🔒 Confidentiality**: Encryption & RBAC
-                - **✅ Integrity**: Audit logs & validation
-                - **🚀 Availability**: Stable access & backup
+                - Confidentiality: encryption & RBAC
+                - Integrity: audit logs & validation
+                - Availability: stable access & backup
             """)
         
         # Route to appropriate dashboard
@@ -803,5 +829,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        st.error(f"🚨 Application Error: {str(e)}")
-        st.info("Please refresh the page or contact system administrator.")
+        st.error(f"Application Error: {str(e)}")
+        st.info("Please refresh the page or contact the system administrator.")
